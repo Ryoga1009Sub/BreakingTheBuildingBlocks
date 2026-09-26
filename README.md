@@ -6,14 +6,26 @@
 
 
 ## 開発環境
-- ゲーム全般：Unity
-- コーディング環境：VSCode
+- ゲーム全般：`Unity`
+- コーディング環境：`VSCode`
    - 拡張機能
-      - Unity（必須）
-      - Unity Code Snippets
-      - Unity Snippets
+      - `Unity`（必須）
+      - `Unity Code Snippets`
+      - `Unity Snippets`
+   - 言語：`C#`
+
     
 ## 実装ルール
 - 機能ごとにGitでブランチを作成して作業後、PRを作成してマージをしながら進める事
 - PR作るまでもない内容であればmasterに直接コミットでも可
    - README、gitignore更新など
+
+## 開発の進め方
+- 実装したい機能・流れを記載したissueを作成する
+   - **1事象/機能に対し1issueとする**
+   - 基本的に1つのissueに複数の要望を書かない
+- 必ずPRのマージでもって実装を進める
+
+
+## issue / PR
+- 記述言語は`Markdown`形式
