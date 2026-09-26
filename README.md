@@ -1,1 +1,5 @@
 # BreakingTheBuildingBlocks
+
+積み木・ブロックで作られた建物に対して、ボールを飛ばして崩すゲーム
+
+<img width=500 src="./images/ゲームイメージ.png"/>
