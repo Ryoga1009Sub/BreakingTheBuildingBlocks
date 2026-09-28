@@ -4,9 +4,18 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
+
+    Rigidbody rigidbody;
+
     void Start()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
-        rb.AddForce(new Vector3(0,5,13), ForceMode.VelocityChange);
+        rigidbody = GetComponent<Rigidbody>();
+    }
+
+    void OnMouseDown()
+    {
+        Debug.Log("マウスクリック");
+        rigidbody.useGravity = true;
+        rigidbody.AddForce(new Vector3(0,5,13), ForceMode.VelocityChange);
     }
 }
