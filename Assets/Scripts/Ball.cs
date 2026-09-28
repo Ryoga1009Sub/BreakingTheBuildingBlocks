@@ -14,7 +14,6 @@ public class Ball : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log("マウスクリック");
         rigidbody.useGravity = true;
         rigidbody.AddForce(new Vector3(0,5,13), ForceMode.VelocityChange);
     }
