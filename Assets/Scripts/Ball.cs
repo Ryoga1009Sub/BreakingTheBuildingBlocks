@@ -9,71 +9,37 @@ using UnityEngine.UIElements;
 public class Ball : MonoBehaviour
 {
 
-    private Rigidbody rigidbody;
-    private Vector3 dragStartposition;
-    private float powerRatioY = 0.02f;
-    private float powerRatioX = 0.04f;
-    private bool isPressing = false;
-    private float maxDragDistance = 400f;
-    private float maxForce = 25f;
+    private float lifeTime = 3f; // ボールの生存時間
 
+    public event Action<Ball> OnDestroyed;
 
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.useGravity = false;
     }
 
     void Update()
     {
-        // 画面をクリックした瞬間
-        if (Mouse.current.leftButton.wasPressedThisFrame && !isPressing)
-        {
-            OnDragStart();
-        }
 
-        // クリックを離した瞬間
-        if (isPressing && Mouse.current.leftButton.wasReleasedThisFrame)
-        {
-            OnDragEnd();
-        }
     }
 
-
-    private void OnDragStart()
+    public void Launch(Vector3 velocity)
     {
-        Debug.Log("マウスドラッギング");
-        isPressing = true;
-        dragStartposition = Mouse.current.position.ReadValue();
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.AddForce(velocity, ForceMode.Impulse);
+
+        rb.useGravity = true;
+        // 射出された瞬間から5秒後に消す
+        Invoke(nameof(DestroyBall), lifeTime);
     }
 
-    private void OnDragEnd()
+    private void DestroyBall()
     {
-        Debug.Log("マウスリリース");
-        isPressing = false;
+        Debug.Log("ボール消滅");
+        OnDestroyed?.Invoke(this);
 
-        Vector3 dragEndPosition = Mouse.current.position.ReadValue();
-
-        // 引っ張ったベクトルを計算（開始位置 - 終了位置）
-        Vector3 dragVector = dragStartposition - dragEndPosition;
-
-        // 力加減計算
-        // 引っ張った距離
-        float dragDistance = dragVector.magnitude;
-        // 最大距離で制限
-        dragDistance = Mathf.Min(dragDistance, maxDragDistance);
-        // 0～1に変換
-        float power = dragDistance / maxDragDistance;
-        // 実際の発射速度
-        float force = power * maxForce;
-
-
-        Debug.Log($"{dragStartposition},  {dragEndPosition} {force}");
-
-        rigidbody.useGravity = true;
-
-        Vector3 launchForce = new Vector3(dragVector.x * powerRatioX, dragVector.y * powerRatioY, force);
-        Debug.Log($"{launchForce}");
-        // ボールに瞬間的な力を加える（3DのImpulseモード）
-        rigidbody.AddForce(launchForce, ForceMode.Impulse);
+        Destroy(gameObject);
     }
 }
