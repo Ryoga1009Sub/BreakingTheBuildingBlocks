@@ -41,7 +41,7 @@ public class PlayerMovementController : MonoBehaviour
 
         Debug.Log($"ステージサイズ{stage.transform.position}  {transform.transform.position}");
 
-        if (stage.transform.position.x <= transform.position.x || )
+        if (stage.transform.position.x <= transform.position.x || stage.transform.position.x <= transform.position.x)
         {
             diffX = input * speed * Time.deltaTime;
         }
