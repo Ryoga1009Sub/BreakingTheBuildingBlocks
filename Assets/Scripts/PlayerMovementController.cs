@@ -1,92 +1,63 @@
+using System.Net;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovementController : MonoBehaviour
 {
     [SerializeField] private GameObject stage;
-    [SerializeField] float speed = 5f;
+    // 回転速度（度/秒）
+    [SerializeField] private float rotationSpeed = 90f;
     [SerializeField] float distance = 5f;
     private Vector2 moveInput;
 
-    private Vector3 stageSize;
-
-    // 現在の移動方向
-    private float directionX = 1f;
-    private float directionZ = 1f;
-
-    // 最大可動範囲
-    private float maxX;
-    private float minX;
-    private float maxZ;
-    private float minZ;
-
+    // 現在の角度
+    private float angle = 0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        stageSize = stage.GetComponent<Renderer>().bounds.size;
-
-
-        maxX = stage.transform.position.x + stageSize.x + distance;
-        minX = stage.transform.position.x - stageSize.x - distance;
-
-        maxZ = stage.transform.position.z + stageSize.z + distance;
-        minZ = stage.transform.position.z - stageSize.z - distance;
+        UpdatePosition();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // 左右だけ使用
-        float input = moveInput.x;
-
-        // 入力中のみ移動させる
-        if (Mathf.Abs(input) < 0.01f)
-            return;
-
-
-        Debug.Log($"ステージサイズ{stage.transform.position}  {transform.transform.position}");
-
-        // X座標の往復移動
-        float newX = transform.position.x + directionX * speed * input;
-        if (newX >= maxX)
+        // 左右入力があるときだけ回転
+        if (Mathf.Abs(moveInput.x) > 0.01f)
         {
-            newX = maxX;
-            directionX = -1f;
+            angle += moveInput.x * rotationSpeed * Time.deltaTime;
+
+            // 0～360°に収める
+            if (angle >= 360f)
+                angle -= 360f;
+
+            if (angle < 0f)
+                angle += 360f;
+
+            UpdatePosition();
         }
-        else if (newX <= minX)
-        {
-            newX = minX;
-            directionX = 1f;
-        }
-
-        // Z座標の往復移動
-        float newZ = transform.position.z + directionZ * speed * input;
-        if (newZ >= maxZ)
-        {
-            newZ = maxZ;
-            directionZ = -1f;
-        }
-        else if (newZ <= minZ)
-        {
-            newZ = minZ;
-            directionZ = 1f;
-        }
-
-
-        transform.position = new Vector3(
-            newX,
-            transform.position.y,
-            newZ
-        );
-
-        transform.LookAt(stage.transform.position);
-
-        print($"位置 {transform.position}");
     }
 
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+    }
+
+    private void UpdatePosition()
+    {
+        float radian = angle * Mathf.Deg2Rad;
+
+        // コンパスのようにステージ中心を基準に円周上を移動
+        float x = Mathf.Sin(radian) * distance;
+        float z = -Mathf.Cos(radian) * distance;
+
+        transform.position = stage.transform.position + new Vector3(
+            x,
+            transform.position.y,
+            z
+        );
+
+        // 常にステージの中心を見る
+        transform.LookAt(stage.transform.position);
     }
 }

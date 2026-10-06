@@ -263,8 +263,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementController
   stage: {fileID: 1239463661}
-  speed: 0.01
-  distance: 3
+  speed: 1
+  distance: 13
 --- !u!114 &117124982
 MonoBehaviour:
   m_ObjectHideFlags: 0
