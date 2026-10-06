@@ -1,20 +1,24 @@
-using System;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.PlayerLoop;
-using UnityEngine.UIElements.Experimental;
 
 public class PlayerMovementController : MonoBehaviour
 {
     [SerializeField] private GameObject stage;
     [SerializeField] float speed = 5f;
-    [SerializeField] float radius = 5f;
-    // ランチャーの初期位置
-    private float initialDistance;
+    [SerializeField] float distance = 5f;
     private Vector2 moveInput;
 
     private Vector3 stageSize;
+
+    // 現在の移動方向
+    private float directionX = 1f;
+    private float directionZ = 1f;
+
+    // 最大可動範囲
+    private float maxX;
+    private float minX;
+    private float maxZ;
+    private float minZ;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -22,9 +26,12 @@ public class PlayerMovementController : MonoBehaviour
     {
         stageSize = stage.GetComponent<Renderer>().bounds.size;
 
-        initialDistance = stage.transform.position.z + transform.position.z;
 
-        Debug.Log($"ステージサイズ{stageSize}  {initialDistance}");
+        maxX = stage.transform.position.x + stageSize.x + distance;
+        minX = stage.transform.position.x - stageSize.x - distance;
+
+        maxZ = stage.transform.position.z + stageSize.z + distance;
+        minZ = stage.transform.position.z - stageSize.z - distance;
     }
 
     // Update is called once per frame
@@ -33,45 +40,47 @@ public class PlayerMovementController : MonoBehaviour
         // 左右だけ使用
         float input = moveInput.x;
 
+        // 入力中のみ移動させる
         if (Mathf.Abs(input) < 0.01f)
             return;
 
-        float diffX = 0f;
-        float diffZ = 0f;
 
         Debug.Log($"ステージサイズ{stage.transform.position}  {transform.transform.position}");
 
-        if (stage.transform.position.x <= transform.position.x || stage.transform.position.x <= transform.position.x)
+        // X座標の往復移動
+        float newX = transform.position.x + directionX * speed * input;
+        if (newX >= maxX)
         {
-            diffX = input * speed * Time.deltaTime;
+            newX = maxX;
+            directionX = -1f;
+        }
+        else if (newX <= minX)
+        {
+            newX = minX;
+            directionX = 1f;
         }
 
-        // if (stage.transform.position.x + (stageSize.x / 2) <= transform.position.x ||
-        //  (stage.transform.position.x + (stageSize.x / 2) <= transform.position.x) && (transform.position.x <= stage.transform.position.x + (stageSize.x / 2) + radius))
-        // {
-        //     diffX = input * speed * Time.deltaTime;
-        // }
-        // else if ((stage.transform.position.x - radius <= transform.position.x) && (transform.position.x <= stage.transform.position.x))
-        // {
-        //     diffX = -(input * speed * Time.deltaTime);
-        // }
-
-
-        if (stage.transform.position.z <= transform.position.z || (stage.transform.position.z < transform.position.z) && (transform.position.z <= stage.transform.position.z + radius))
+        // Z座標の往復移動
+        float newZ = transform.position.z + directionZ * speed * input;
+        if (newZ >= maxZ)
         {
-
-            diffZ = input * speed * Time.deltaTime;
+            newZ = maxZ;
+            directionZ = -1f;
         }
-        else if ((stage.transform.position.z - radius <= transform.position.z) && (transform.position.z <= stage.transform.position.z))
+        else if (newZ <= minZ)
         {
-            diffZ = -(input * speed * Time.deltaTime);
+            newZ = minZ;
+            directionZ = 1f;
         }
 
 
-        Debug.Log($"diffX: {diffX}  diffZ: {diffZ}");
+        transform.position = new Vector3(
+            newX,
+            transform.position.y,
+            newZ
+        );
 
-        // X方向に少しずつ移動
-        transform.position += new Vector3(diffX, 0, diffZ);
+        transform.LookAt(stage.transform.position);
 
         print($"位置 {transform.position}");
     }
