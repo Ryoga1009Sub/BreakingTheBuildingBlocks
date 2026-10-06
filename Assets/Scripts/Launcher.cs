@@ -1,25 +1,20 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 public class Launcher : MonoBehaviour
 {
     [SerializeField] private BallManager ballManager;
 
-    private Vector3 dragStartposition;
-    private float powerRatioY = 0.02f; // 引っ張る方向Y計算用　倍率
-    private float powerRatioX = 0.04f; // 引っ張る方向X計算用　倍率
-    private bool isPressing = false; // ドラッグ中かどうか
-    private float maxDragDistance = 400f; // 発射速度計算用　引っ張る距離の上限
-    private float maxForce = 25f; // 最大発射速度
+    [Header("引っ張り設定")]
+    [SerializeField] private float powerRatioY = 0.02f;
+    [SerializeField] private float powerRatioX = 0.04f;
+    [SerializeField] private float maxDragDistance = 400f;
+    [SerializeField] private float maxForce = 25f;
 
-    void Start()
-    {
+    private Vector3 dragStartPosition;
+    private bool isPressing = false;
 
-    }
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // 画面をクリックした瞬間
         if (Mouse.current.leftButton.wasPressedThisFrame && !isPressing)
@@ -34,42 +29,87 @@ public class Launcher : MonoBehaviour
         }
     }
 
-
     private void OnDragStart()
     {
-        // ボールがなければ操作なし
+        // ボールがなければ操作しない
         if (ballManager.GetCurrentBall() == null)
         {
             return;
         }
+
         isPressing = true;
-        dragStartposition = Mouse.current.position.ReadValue();
+
+        dragStartPosition =
+            Mouse.current.position.ReadValue();
     }
 
     private void OnDragEnd()
     {
-        Debug.Log("マウスリリース");
+        Vector3 dragEndPosition =
+            Mouse.current.position.ReadValue();
 
-        Vector3 dragEndPosition = Mouse.current.position.ReadValue();
+        // =========================================
+        // ① 今までと同じ「引っ張った方向」を取得
+        // =========================================
 
-        // 引っ張ったベクトルを計算（開始位置 - 終了位置）
-        Vector3 dragVector = dragStartposition - dragEndPosition;
+        Vector3 dragVector =
+            dragStartPosition - dragEndPosition;
 
-        // 力加減計算
-        // 引っ張った距離
-        float dragDistance = dragVector.magnitude;
-        // 最大距離で制限
-        dragDistance = Mathf.Min(dragDistance, maxDragDistance);
-        // 0～1に変換
-        float power = dragDistance / maxDragDistance;
-        // 実際の発射速度
-        float force = power * maxForce;
 
-        Vector3 launchForce = new Vector3(dragVector.x * powerRatioX, dragVector.y * powerRatioY, force);
+        // =========================================
+        // ② 引っ張った距離から威力を計算
+        // =========================================
 
-        // ボールマネージャーにボールを発射させる
-        ballManager.LaunchCurrentBall(launchForce);
+        float dragDistance =
+            dragVector.magnitude;
+
+        dragDistance =
+            Mathf.Min(
+                dragDistance,
+                maxDragDistance
+            );
+
+        float power =
+            dragDistance / maxDragDistance;
+
+        float force =
+            power * maxForce;
+
+
+        // =========================================
+        // ③ Launcher基準の発射方向を作る
+        //
+        // X → Launcherの左右
+        // Y → Launcherの上下
+        // Z → Launcherの正面
+        // =========================================
+
+        Vector3 localLaunchForce = new Vector3(
+            dragVector.x * powerRatioX,
+            dragVector.y * powerRatioY,
+            force
+        );
+
+
+        // =========================================
+        // ④ Launcherの現在の向きを反映
+        //
+        // Launcherが360°回っても、
+        // 「Launcherから見た方向」で飛ぶ
+        // =========================================
+
+        Vector3 worldLaunchForce =
+            transform.TransformDirection(localLaunchForce);
+
+
+        // =========================================
+        // ⑤ 発射
+        // =========================================
+
+        ballManager.LaunchCurrentBall(
+            worldLaunchForce
+        );
+
         isPressing = false;
     }
-
 }
