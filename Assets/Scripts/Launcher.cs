@@ -42,7 +42,6 @@ public class Launcher : MonoBehaviour
         {
             return;
         }
-        Debug.Log("マウスドラッギング");
         isPressing = true;
         dragStartposition = Mouse.current.position.ReadValue();
     }
@@ -66,11 +65,7 @@ public class Launcher : MonoBehaviour
         // 実際の発射速度
         float force = power * maxForce;
 
-
-        Debug.Log($"{dragStartposition},  {dragEndPosition} {force}");
-
         Vector3 launchForce = new Vector3(dragVector.x * powerRatioX, dragVector.y * powerRatioY, force);
-        Debug.Log($"{launchForce}");
 
         // ボールマネージャーにボールを発射させる
         ballManager.LaunchCurrentBall(launchForce);

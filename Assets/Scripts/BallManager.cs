@@ -24,7 +24,6 @@ public class BallManager : MonoBehaviour
 
     private void SpawnBall()
     {
-        Debug.Log("ボール生成");
         currentBall = Instantiate(
             ballPrefab,
             launchPoint.position,

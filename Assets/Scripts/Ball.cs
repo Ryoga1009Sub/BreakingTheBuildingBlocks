@@ -37,7 +37,6 @@ public class Ball : MonoBehaviour
 
     private void DestroyBall()
     {
-        Debug.Log("ボール消滅");
         OnDestroyed?.Invoke(this);
 
         Destroy(gameObject);
