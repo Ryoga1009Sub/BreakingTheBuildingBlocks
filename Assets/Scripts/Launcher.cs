@@ -39,41 +39,31 @@ public class Launcher : MonoBehaviour
 
         isPressing = true;
 
-        dragStartPosition =
-            Mouse.current.position.ReadValue();
+        dragStartPosition = Mouse.current.position.ReadValue();
     }
 
     private void OnDragEnd()
     {
-        Vector3 dragEndPosition =
-            Mouse.current.position.ReadValue();
+        Vector3 dragEndPosition = Mouse.current.position.ReadValue();
 
         // =========================================
         // ① 今までと同じ「引っ張った方向」を取得
         // =========================================
 
-        Vector3 dragVector =
-            dragStartPosition - dragEndPosition;
+        Vector3 dragVector = dragStartPosition - dragEndPosition;
 
 
         // =========================================
         // ② 引っ張った距離から威力を計算
         // =========================================
 
-        float dragDistance =
-            dragVector.magnitude;
+        float dragDistance = dragVector.magnitude;
 
-        dragDistance =
-            Mathf.Min(
-                dragDistance,
-                maxDragDistance
-            );
+        dragDistance = Mathf.Min(dragDistance, maxDragDistance);
 
-        float power =
-            dragDistance / maxDragDistance;
+        float power = dragDistance / maxDragDistance;
 
-        float force =
-            power * maxForce;
+        float force = power * maxForce;
 
 
         // =========================================
@@ -98,17 +88,14 @@ public class Launcher : MonoBehaviour
         // 「Launcherから見た方向」で飛ぶ
         // =========================================
 
-        Vector3 worldLaunchForce =
-            transform.TransformDirection(localLaunchForce);
+        Vector3 worldLaunchForce = transform.TransformDirection(localLaunchForce);
 
 
         // =========================================
         // ⑤ 発射
         // =========================================
 
-        ballManager.LaunchCurrentBall(
-            worldLaunchForce
-        );
+        ballManager.LaunchCurrentBall(worldLaunchForce);
 
         isPressing = false;
     }
