@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2f56ae7446764d94888c5f57f7f69247
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 381878
+  packageName: Stone Tiles Material Pack
+  packageVersion: 1.0
+  assetPath: Assets/StoneTilesMaterialPack/HDRP/Materials/M_StoneTiles_02.mat
+  uploadId: 920854
