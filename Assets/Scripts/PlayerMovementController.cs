@@ -4,19 +4,31 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovementController : MonoBehaviour
 {
-    [SerializeField] private GameObject stage;
     // 回転速度（度/秒）
     [SerializeField] private float rotationSpeed = 90f;
-    [SerializeField] float distance = 5f;
+    [SerializeField] private Transform stage;
+
     private Vector2 moveInput;
+
+    private Quaternion initialRotation;
+
 
     // 現在の角度
     private float angle = 0f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        UpdatePosition();
+        Vector3 direction = stage.position - transform.position;
+
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+
+        // 初期の向きを保存
+        initialRotation = transform.localRotation;
     }
 
     // Update is called once per frame
@@ -28,36 +40,22 @@ public class PlayerMovementController : MonoBehaviour
             angle += moveInput.x * rotationSpeed * Time.deltaTime;
 
             // 0～360°に収める
-            if (angle >= 360f)
-                angle -= 360f;
+            if (angle >= 180f)
+                angle = 180f;
 
-            if (angle < 0f)
-                angle += 360f;
+            if (angle <= 0f)
+                angle = 0f;
 
-            UpdatePosition();
+
+            t // 位置は変えず、Y軸方向だけ回転
+            transform.localRotation =
+                initialRotation *
+                Quaternion.Euler(0f, angle, 0f);
         }
     }
 
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
-    }
-
-    private void UpdatePosition()
-    {
-        float radian = angle * Mathf.Deg2Rad;
-
-        // コンパスのようにステージ中心を基準に円周上を移動
-        float x = Mathf.Sin(radian) * distance;
-        float z = -Mathf.Cos(radian) * distance;
-
-        transform.position = stage.transform.position + new Vector3(
-            x,
-            transform.position.y,
-            z
-        );
-
-        // 常にステージの中心を見る
-        transform.LookAt(stage.transform.position);
     }
 }
