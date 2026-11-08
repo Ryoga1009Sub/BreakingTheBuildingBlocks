@@ -823,6 +823,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 117124983}
     m_Modifications:
+    - target: {fileID: 6949557378510210435, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_Name
+      value: Cannon
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.61357373
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.014776349
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.89056504
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99308455
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.11740183
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.00000002235174
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 13.484
+      objectReference: {fileID: 0}
     - target: {fileID: 6949557379714755764, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.019999998
@@ -893,6 +929,11 @@ PrefabInstance:
 --- !u!4 &1101887238 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6949557379714755764, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
+  m_PrefabInstance: {fileID: 1101887237}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1101887239 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6949557378510248355, guid: 1b9e9c62735c34b2ba21711fe1fb0c97, type: 3}
   m_PrefabInstance: {fileID: 1101887237}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1174752357 stripped
@@ -1200,9 +1241,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8ebdb89719e5348a6c0f2a2fbd0825, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementController
+  cannon: {fileID: 1101887239}
   rotationSpeed: 90
-  minAngle: 0
-  maxAngle: 180
+  minYawAngle: 0
+  maxYawAngle: 180
+  pitchSpeed: 45
+  minPitchAngle: 0
+  maxPitchAngle: 45
+  invertPitchInput: 0
+  invertPitchRotation: 0
 --- !u!114 &1587273678
 MonoBehaviour:
   m_ObjectHideFlags: 0
