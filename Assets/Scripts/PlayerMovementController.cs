@@ -3,8 +3,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovementController : MonoBehaviour
 {
-    [Header("上下回転させる砲身")]
+    [Header("参照")]
     [SerializeField] private Transform cannon;
+    [SerializeField] private TrajectoryRenderer trajectoryRenderer;
 
     [Header("左右回転")]
     [SerializeField] private float rotationSpeed = 90f;
@@ -21,7 +22,6 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private bool invertPitchRotation = false;
 
     private Vector2 moveInput;
-
     private float yawAngle;
     private float pitchAngle;
 
@@ -37,7 +37,6 @@ public class PlayerMovementController : MonoBehaviour
             return;
         }
 
-        // 左右の初期角度
         Vector3 euler = transform.localEulerAngles;
 
         yawAngle = Mathf.Clamp(
@@ -47,14 +46,10 @@ public class PlayerMovementController : MonoBehaviour
         );
 
         yawBaseRotation = Quaternion.Euler(
-            euler.x,
-            0f,
-            euler.z
+            euler.x, 0f, euler.z
         );
 
-        // Cannonの初期回転を保存
         cannonBaseRotation = cannon.localRotation;
-
         pitchAngle = 0f;
 
         UpdateRotation();
@@ -62,24 +57,14 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Update()
     {
-        // 左右回転
-        yawAngle +=
-            moveInput.x * rotationSpeed * Time.deltaTime;
+        yawAngle += moveInput.x * rotationSpeed * Time.deltaTime;
+        yawAngle = Mathf.Clamp(yawAngle, minYawAngle, maxYawAngle);
 
-        yawAngle = Mathf.Clamp(
-            yawAngle,
-            minYawAngle,
-            maxYawAngle
-        );
-
-        // 上下回転
         float pitchInput = invertPitchInput
             ? -moveInput.y
             : moveInput.y;
 
-        pitchAngle +=
-            pitchInput * pitchSpeed * Time.deltaTime;
-
+        pitchAngle += pitchInput * pitchSpeed * Time.deltaTime;
         pitchAngle = Mathf.Clamp(
             pitchAngle,
             minPitchAngle,
@@ -87,6 +72,10 @@ public class PlayerMovementController : MonoBehaviour
         );
 
         UpdateRotation();
+
+        // ジョイスティック操作中だけ軌道線を表示
+        bool isMoving = moveInput.sqrMagnitude > 0.0001f;
+        trajectoryRenderer.SetAiming(isMoving);
     }
 
     public void OnMove(InputValue value)
@@ -96,19 +85,16 @@ public class PlayerMovementController : MonoBehaviour
 
     private void UpdateRotation()
     {
-        // 大砲全体の左右回転
         transform.localRotation =
             yawBaseRotation *
             Quaternion.Euler(0f, yawAngle, 0f);
 
-        // 砲身だけをローカルY軸で上下回転
-        float rotationSign =
-            invertPitchRotation ? -1f : 1f;
+        float sign = invertPitchRotation ? -1f : 1f;
 
         cannon.localRotation =
             cannonBaseRotation *
             Quaternion.AngleAxis(
-                pitchAngle * rotationSign,
+                pitchAngle * sign,
                 Vector3.up
             );
     }
