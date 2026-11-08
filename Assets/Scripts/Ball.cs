@@ -1,44 +1,25 @@
-using System;
-using NUnit.Framework;
-using Unity.AI.Navigation.LowLevel;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
-
+[RequireComponent(typeof(Rigidbody))]
 public class Ball : MonoBehaviour
 {
+    [SerializeField] private float lifeTime = 5f;
 
-    private float lifeTime = 3f; // ボールの生存時間
+    private Rigidbody rb;
 
-    public event Action<Ball> OnDestroyed;
-
-    void Start()
+    private void Awake()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
-    }
-
-    void Update()
-    {
-
     }
 
     public void Launch(Vector3 velocity)
     {
+        rb.useGravity = true;
 
-        Rigidbody rb = GetComponent<Rigidbody>();
         rb.AddForce(velocity, ForceMode.Impulse);
 
-        rb.useGravity = true;
-        // 射出された瞬間から5秒後に消す
-        Invoke(nameof(DestroyBall), lifeTime);
-    }
-
-    private void DestroyBall()
-    {
-        OnDestroyed?.Invoke(this);
-
-        Destroy(gameObject);
+        // 発射から5秒後に削除
+        Destroy(gameObject, lifeTime);
     }
 }
