@@ -1,61 +1,66 @@
-using System.Net;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovementController : MonoBehaviour
 {
-    // 回転速度（度/秒）
+    [Header("照準設定")]
     [SerializeField] private float rotationSpeed = 90f;
-    [SerializeField] private Transform stage;
+
+    [Header("回転制限")]
+    [SerializeField] private float minAngle = 0f;
+    [SerializeField] private float maxAngle = 180f;
 
     private Vector2 moveInput;
 
-    private Quaternion initialRotation;
+    // 現在のY軸回転角度
+    private float angle;
 
+    // 初期のX・Z回転を保持
+    private float initialX;
+    private float initialZ;
 
-    // 現在の角度
-    private float angle = 0f;
-
-    void Start()
+    private void Start()
     {
-        Vector3 direction = stage.position - transform.position;
+        // Inspectorで設定した初期角度を取得
+        Vector3 euler = transform.localEulerAngles;
 
-        direction.y = 0f;
+        initialX = euler.x;
+        initialZ = euler.z;
 
-        if (direction.sqrMagnitude > 0.001f)
-        {
-            transform.rotation = Quaternion.LookRotation(direction);
-        }
+        // 初期Y角度を取得（90°を想定）
+        angle = Mathf.Clamp(euler.y, minAngle, maxAngle);
 
-        // 初期の向きを保存
-        initialRotation = transform.localRotation;
+        UpdateRotation();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // 左右入力があるときだけ回転
         if (Mathf.Abs(moveInput.x) > 0.01f)
         {
             angle += moveInput.x * rotationSpeed * Time.deltaTime;
 
-            // 0～360°に収める
-            if (angle >= 180f)
-                angle = 180f;
-
-            if (angle <= 0f)
-                angle = 0f;
+            print($"aaaaaa {angle}");
 
 
-            t // 位置は変えず、Y軸方向だけ回転
-            transform.localRotation =
-                initialRotation *
-                Quaternion.Euler(0f, angle, 0f);
+            // 0～180°の範囲に制限
+            angle = Mathf.Clamp(angle, minAngle, maxAngle);
+
+            UpdateRotation();
         }
     }
 
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+    }
+
+    private void UpdateRotation()
+    {
+        transform.localRotation = Quaternion.Euler(
+            initialX,
+            angle,
+            initialZ
+        );
     }
 }
