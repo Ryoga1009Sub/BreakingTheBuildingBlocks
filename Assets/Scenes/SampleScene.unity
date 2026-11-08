@@ -206,7 +206,7 @@ MonoBehaviour:
   launchPoint: {fileID: 370193527}
   launcher: {fileID: 1492954664}
   ballRigidbody: {fileID: 4622261853829634620, guid: 7db29c43d4c38a044a75c29d70b23581, type: 3}
-  pointCount: 40
+  pointCount: 80
   timeStep: 0.05
 --- !u!120 &193105627
 LineRenderer:
@@ -234,7 +234,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: a920e736cffb6bb4789737b86ce5e232, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -259,7 +259,6 @@ LineRenderer:
   m_MaskInteraction: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -312,7 +311,7 @@ LineRenderer:
     numCapVertices: 0
     alignment: 0
     textureMode: 0
-    textureScale: {x: 1, y: 1}
+    textureScale: {x: 0.5, y: 0.5}
     shadowBias: 0.5
     generateLightingData: 0
   m_UseWorldSpace: 1
