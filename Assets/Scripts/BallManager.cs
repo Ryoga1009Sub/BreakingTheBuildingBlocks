@@ -4,57 +4,19 @@ public class BallManager : MonoBehaviour
 {
     [SerializeField] private Ball ballPrefab;
     [SerializeField] private Transform launchPoint;
-    private Ball currentBall;
 
-    void Start()
+    public void SpawnAndLaunchBall(float force)
     {
-        SpawnBall();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public Ball GetCurrentBall()
-    {
-        return currentBall;
-    }
-
-    private void SpawnBall()
-    {
-        currentBall = Instantiate(
+        // 発射する瞬間にボールを生成
+        Ball ball = Instantiate(
             ballPrefab,
             launchPoint.position,
-            Quaternion.identity
+            launchPoint.rotation
         );
-        currentBall.OnDestroyed += OnBallDestroyed;
-    }
 
+        // 砲身の向きに発射
+        Vector3 direction = launchPoint.forward.normalized;
 
-    public void LaunchCurrentBall(Vector3 velocity)
-    {
-        if (currentBall == null)
-        {
-            return;
-        }
-
-        Ball ball = currentBall;
-
-        // 手元のボールを空にする
-        currentBall = null;
-
-        // 発射
-        ball.Launch(velocity);
-
-        // ボールが消えたら次のボールを作る
-        Destroy(ball.gameObject, 5f);
-    }
-
-    private void OnBallDestroyed(Ball ball)
-    {
-        // 次のボールを生成
-        SpawnBall();
+        ball.Launch(direction * force);
     }
 }
