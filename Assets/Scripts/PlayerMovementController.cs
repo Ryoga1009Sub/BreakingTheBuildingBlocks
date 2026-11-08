@@ -1,41 +1,92 @@
-using System.Net;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovementController : MonoBehaviour
 {
-    [SerializeField] private GameObject stage;
-    // 回転速度（度/秒）
+    [Header("上下回転させる砲身")]
+    [SerializeField] private Transform cannon;
+
+    [Header("左右回転")]
     [SerializeField] private float rotationSpeed = 90f;
-    [SerializeField] float distance = 5f;
+    [SerializeField] private float minYawAngle = 0f;
+    [SerializeField] private float maxYawAngle = 180f;
+
+    [Header("上下回転")]
+    [SerializeField] private float pitchSpeed = 45f;
+    [SerializeField] private float minPitchAngle = 0f;
+    [SerializeField] private float maxPitchAngle = 45f;
+
+    [Header("回転方向")]
+    [SerializeField] private bool invertPitchInput = false;
+    [SerializeField] private bool invertPitchRotation = false;
+
     private Vector2 moveInput;
 
-    // 現在の角度
-    private float angle = 0f;
+    private float yawAngle;
+    private float pitchAngle;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Quaternion yawBaseRotation;
+    private Quaternion cannonBaseRotation;
+
+    private void Start()
     {
-        UpdatePosition();
+        if (cannon == null)
+        {
+            Debug.LogError("Cannonが設定されていません！");
+            enabled = false;
+            return;
+        }
+
+        // 左右の初期角度
+        Vector3 euler = transform.localEulerAngles;
+
+        yawAngle = Mathf.Clamp(
+            euler.y,
+            minYawAngle,
+            maxYawAngle
+        );
+
+        yawBaseRotation = Quaternion.Euler(
+            euler.x,
+            0f,
+            euler.z
+        );
+
+        // Cannonの初期回転を保存
+        cannonBaseRotation = cannon.localRotation;
+
+        pitchAngle = 0f;
+
+        UpdateRotation();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        // 左右入力があるときだけ回転
-        if (Mathf.Abs(moveInput.x) > 0.01f)
-        {
-            angle += moveInput.x * rotationSpeed * Time.deltaTime;
+        // 左右回転
+        yawAngle +=
+            moveInput.x * rotationSpeed * Time.deltaTime;
 
-            // 0～360°に収める
-            if (angle >= 360f)
-                angle -= 360f;
+        yawAngle = Mathf.Clamp(
+            yawAngle,
+            minYawAngle,
+            maxYawAngle
+        );
 
-            if (angle < 0f)
-                angle += 360f;
+        // 上下回転
+        float pitchInput = invertPitchInput
+            ? -moveInput.y
+            : moveInput.y;
 
-            UpdatePosition();
-        }
+        pitchAngle +=
+            pitchInput * pitchSpeed * Time.deltaTime;
+
+        pitchAngle = Mathf.Clamp(
+            pitchAngle,
+            minPitchAngle,
+            maxPitchAngle
+        );
+
+        UpdateRotation();
     }
 
     public void OnMove(InputValue value)
@@ -43,21 +94,22 @@ public class PlayerMovementController : MonoBehaviour
         moveInput = value.Get<Vector2>();
     }
 
-    private void UpdatePosition()
+    private void UpdateRotation()
     {
-        float radian = angle * Mathf.Deg2Rad;
+        // 大砲全体の左右回転
+        transform.localRotation =
+            yawBaseRotation *
+            Quaternion.Euler(0f, yawAngle, 0f);
 
-        // コンパスのようにステージ中心を基準に円周上を移動
-        float x = Mathf.Sin(radian) * distance;
-        float z = -Mathf.Cos(radian) * distance;
+        // 砲身だけをローカルY軸で上下回転
+        float rotationSign =
+            invertPitchRotation ? -1f : 1f;
 
-        transform.position = stage.transform.position + new Vector3(
-            x,
-            transform.position.y,
-            z
-        );
-
-        // 常にステージの中心を見る
-        transform.LookAt(stage.transform.position);
+        cannon.localRotation =
+            cannonBaseRotation *
+            Quaternion.AngleAxis(
+                pitchAngle * rotationSign,
+                Vector3.up
+            );
     }
 }
